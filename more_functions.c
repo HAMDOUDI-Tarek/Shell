@@ -2,25 +2,25 @@
 
 /**
  * is_interactive - checks if shell is interactive.
- * @info: struct.
+ * @inf: struct.
  * Return: 0 or 1.
  */
-int is_interactive(info_t *info)
+int is_interactive(info_t *inf)
 {
-	return (isatty(STDIN_FILENO) && info->readfd <= 2);
+	return (isatty(STDIN_FILENO) && inf->readfd <= 2);
 }
 
 /**
  * delimeter - checks if character is a delimeter
- * @c: the char to check
- * @delim: the delimeter string
+ * @charac: the char to check
+ * @del: the delimeter string
  * Return: 1 if true, 0 if false
  */
-int delimeter(char c, char *delim)
+int delimeter(char charac, char *del)
 {
-	while (*delim)
+	while (*del)
 	{
-		if (*delim++ == c)
+		if (*del++ == charac)
 			return (1);
 	}
 	return (0);
@@ -28,13 +28,13 @@ int delimeter(char c, char *delim)
 
 /**
  *_isalpha - checks for alphabetic character
- *@c: The character to input
- *Return: 1 if c is alphabetic, 0 otherwise
+ *@charac: The character to input
+ *Return: 1 if charac is alphabetic, 0 otherwise
  */
 
-int _isalpha(int c)
+int _isalpha(int charac)
 {
-	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
+	return ((charac >= 'a' && charac <= 'z') || (charac >= 'A' && charac <= 'Z'));
 }
 
 /**

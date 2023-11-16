@@ -34,7 +34,7 @@ int erroratoi(char *input_string)
 		}
 	}
 
-	return ((*input_string == '-') ? -(int)result_value : (int)result_value);
+	return (result_value);
 }
 
 /**
@@ -62,40 +62,34 @@ void error_print(info_t *info, char *error_string)
  */
 int decint_print(int input_number, int file_descriptor)
 {
-	int (*output_function)(char) = _putchar;
-	int divisor, digit_count = 0;
-	unsigned int absolute_value, current_digit;
+	int (*__putchar)(char) = _putchar;
+	int i, count = 0;
+	unsigned int _abs_, current;
 
 	if (file_descriptor == STDERR_FILENO)
-		output_function = _eputchar;
-
+		__putchar = _eputchar;
 	if (input_number < 0)
 	{
-		absolute_value = -input_number;
-		output_function('-');
-		digit_count++;
+		_abs_ = -input_number;
+		__putchar('-');
+		count++;
 	}
 	else
+		_abs_ = input_number;
+	current = _abs_;
+	for (i = 1000000000; i > 1; i /= 10)
 	{
-		absolute_value = input_number;
-	}
-
-	current_digit = absolute_value;
-
-	for (divisor = 1000000000; divisor > 1; divisor /= 10)
-	{
-		if (absolute_value / divisor)
+		if (_abs_ / i)
 		{
-			output_function('0' + current_digit / divisor);
-			digit_count++;
+			__putchar('0' + current / i);
+			count++;
 		}
-		current_digit %= divisor;
+		current %= i;
 	}
+	__putchar('0' + current);
+	count++;
 
-	output_function('0' + current_digit);
-	digit_count++;
-
-	return (digit_count);
+	return (count);
 }
 
 /**
@@ -118,7 +112,7 @@ char *num_conv(long int input_num, int base, int conversion_flags)
 		absolute_value = -input_num;
 		sign_indicator = '-';
 	}
-	const char *character_set = (conversion_flags & CONVERT_LOWERCASE)
+	character_set = (conversion_flags & CONVERT_LOWERCASE)
 		? "0123456789abcdef"
 		: "0123456789ABCDEF";
 	result_ptr = &result_buffer[49];

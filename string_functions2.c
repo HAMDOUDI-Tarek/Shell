@@ -26,7 +26,7 @@ char *_strcpy(char *dest, char *src)
  * Return: duplicated string.
  */
 
-char *_strdup(char *str)
+char *_strdup(const char *str)
 {
 	char *dup;
 	int i = 0, len = 0;

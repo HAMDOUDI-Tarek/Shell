@@ -1,128 +1,97 @@
 #include "shell.h"
 
 /**
- * Exit - Handles the exit command in the shell.
- * @info: Struct.
- * Return: 0 or 1.
+ * Exit - exits the shell
+ * @inf: Structure containing potential arguments. Used to maintain
+ *          constant function prototype.
+ *  Return: exits with a given exit status
+ *         (0) if info.argv[0] != "exit"
  */
-int Exit(info_t *info)
+int Exit(info_t *inf)
 {
-	int exit_value = 0;
+	int check_exit;
 
-	if (info->argv[1])
+	if (inf->argv[1])
 	{
-		exit_value = _erratoi(info->argv[1]);
-
-		if (exit_value == -1)
+		check_exit = erroratoi(inf->argv[1]);
+		if (check_exit == -1)
 		{
-			info->status = 2;
-			print_error(info, "Illegal number: ");
-			_eputs(info->argv[1]);
+			inf->status = 2;
+			error_print(inf, "Illegal number: ");
+			_eputs(inf->argv[1]);
 			_eputchar('\n');
 			return (1);
 		}
-
-		info->err_num = exit_value;
+		inf->err_num = erroratoi(inf->argv[1]);
+		return (-2);
 	}
-	else
-	{
-		info->err_num = -1;
-	}
-
+	inf->err_num = -1;
 	return (-2);
 }
 
 /**
- * get_current_directory - gives out pwd.
- * @buffer: Buffer to store pwd.
- * Return: pwd.
+ * CD - changes the current directory of the process
+ * @inf: Structure containing potential arguments. Used to maintain
+ *          constant function prototype.
+ *  Return: Always 0
  */
-char *get_current_directory(char *buffer)
+int CD(info_t *inf)
 {
-	char *cwd = getcwd(buffer, 1024);
+	char *str, *directory, buffer[1024];
+	int chdir_res;
 
-	if (!cwd)
+	str = getcwd(buffer, 1024);
+	if (!str)
 		_puts("TODO: >>getcwd failure emsg here<<\n");
-	return (cwd);
-}
-
-/**
- * change_directory - change pwd.
- * @info: Pointer to the info_t structure.
- * @new_dir: New directory path.
- * Return: 0 or 1.
- */
-int change_directory(info_t *info, const char *new_dir)
-{
-	int chdir_ret = chdir(new_dir);
-
-	if (chdir_ret == -1)
+	if (!inf->argv[1])
 	{
-		print_error(info, "can't cd to ");
-		_eputs(new_dir), _eputchar('\n');
-	}
-	else
-	{
-		_setenv(info, "OLDPWD", _getenv(info, "PWD="));
-		_setenv(info, "PWD", get_current_directory(buffer));
-	}
-
-	return (chdir_ret);
-}
-
-/**
- * CD - Implementation of the "cd" command.
- * @info: struct.
- * Return: 0, 1 or -1.
- */
-int CD(info_t *info)
-{
-	char *s, *dir, buffer[1024];
-	int chdir_ret;
-
-	s = get_current_directory(buffer);
-
-	if (!info->argv[1])
-	{
-		dir = _getenv(info, "HOME=");
-		if (!dir)
-			chdir_ret = change_directory(info,
-					(dir = _getenv(info, "PWD=")) ? dir : "/");
+		directory = _getenv(inf, "HOME=");
+		if (!directory)
+			chdir_res = /* TODO: what should this be? */
+				chdir((directory = _getenv(inf, "PWD=")) ? directory : "/");
 		else
-			chdir_ret = change_directory(info, dir);
+			chdir_res = chdir(directory);
 	}
-	else if (_strcmp(info->argv[1], "-") == 0)
+	else if (_strcmp(inf->argv[1], "-") == 0)
 	{
-		if (!_getenv(info, "OLDPWD="))
+		if (!_getenv(inf, "OLDPWD="))
 		{
-			_puts(s);
+			_puts(str);
 			_putchar('\n');
 			return (1);
 		}
-		_puts(_getenv(info, "OLDPWD=")), _putchar('\n');
-		chdir_ret = change_directory(info,
-				(dir = _getenv(info, "OLDPWD=")) ? dir : "/");
+		_puts(_getenv(inf, "OLDPWD=")), _putchar('\n');
+		chdir_res = /* TODO: what should this be? */
+			chdir((directory = _getenv(inf, "OLDPWD=")) ? directory : "/");
+	}
+	else
+		chdir_res = chdir(inf->argv[1]);
+	if (chdir_res == -1)
+	{
+		error_print(inf, "can't change dir to ");
+		_eputs(inf->argv[1]), _eputchar('\n');
 	}
 	else
 	{
-		chdir_ret = change_directory(info, info->argv[1]);
+		_setenv(inf, "OLDPWD", _getenv(inf, "PWD="));
+		_setenv(inf, "PWD", getcwd(buffer, 1024));
 	}
-
-	return (chdir_ret == -1 ? -1 : 0);
+	return (0);
 }
 
 /**
- * Help - changes process pwd.
- * @info: Struct.
+ * Help - changes the current directory of the process
+ * @inf: Structure containing potential arguments. Used to maintain
+ *          constant function prototype.
  *  Return: Always 0
  */
-int Help(info_t *info)
+int Help(info_t *inf)
 {
 	char **args;
 
-	args = info->argv;
+	args = inf->argv;
 	_puts("help call works. Function not yet implemented \n");
 	if (0)
-		_puts(*args);
+		_puts(*args); /* temp att_unused workaround */
 	return (0);
 }
